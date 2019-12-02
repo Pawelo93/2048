@@ -2,49 +2,52 @@ import 'board.dart';
 import 'direction.dart';
 
 class BoardMove {
-
-
-  Board move(Board passedBoard, Direction direction)
-  {
-//    ArrayList<Moves> moves = new ArrayList<Moves>();
-    // points for this move //
-//    int points = 0;
-//    beforeTableArray = getTableArray();
+  Board move(Board passedBoard, Direction direction) {
 
     Board actualBoard;
-    if(direction == Direction.DOWN) {
+    if (direction == Direction.DOWN) {
       actualBoard = passedBoard;
-    } else if(direction == Direction.RIGHT) {
+    } else if (direction == Direction.RIGHT) {
       actualBoard = _rotateTableRight(passedBoard);
-    } else if(direction == Direction.UP){
+    } else if (direction == Direction.UP) {
       actualBoard = _rotateTableRight(passedBoard);
       actualBoard = _rotateTableRight(passedBoard);
-    }else if(direction == Direction.LEFT){
+    } else if (direction == Direction.LEFT) {
       actualBoard = _rotateTableRight(passedBoard);
       actualBoard = _rotateTableRight(passedBoard);
       actualBoard = _rotateTableRight(passedBoard);
     }
 
-    for(int col = 0; col < 4; col++) {
-      var row = 3;
-      var value = actualBoard.grid[row - 1].elementAt(col);
-      if(actualBoard.grid[row].elementAt(col) == 0)
-        actualBoard.put(col, row, value);
-      else if(actualBoard.grid[row].elementAt(col) == value)
-        actualBoard.put(col, row, value * value);
+
+//    var col = 0;
+//    var row = 3;
+//    var fromCol = 0;
+//    var fromRow = row - 1;
+//    bool merged = false;
+//    var value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    merged = _checkLowestPosition(actualBoard, col, row, value, fromCol, fromRow, merged);
+//
+//    row = 2;
+//    fromRow = row - 1;
+//    value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    if(actualBoard.grid[2].elementAt(col) == 0)
+//      merged = _checkLowestPosition(actualBoard, col, row + 1, value, fromCol, fromRow, merged);
+//    value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    merged = _checkPositionTwo(actualBoard, col, row, value, fromCol, fromRow, merged);
+//
+//    row = 1;
+//    fromRow = row - 1;
+//    value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    if(actualBoard.grid[2].elementAt(col) == 0 && actualBoard.grid[1].elementAt(col) == 0)
+//      merged = _checkLowestPosition(actualBoard, col, row + 2, value, fromCol, fromRow, merged);
+//    value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    if(actualBoard.grid[1].elementAt(col) == 0)
+//      merged = _checkPositionTwo(actualBoard, col, row + 1, value, fromCol, fromRow, merged);
+//    value = actualBoard.grid[fromRow].elementAt(fromCol);
+//    merged = _checkPositionOne(actualBoard, col, row, value, fromCol, fromRow, merged);
 
 
-
-      row = 2;
-      var v1 = actualBoard.grid[row - 2].elementAt(col);
-      if(actualBoard.grid[row + 1].elementAt(col) == 0)
-        actualBoard.put(col, row + 1, value);
-      _replace(actualBoard, row, col, v1);
-
-      row = 1;
-      var v0 = actualBoard.grid[row - 1].elementAt(col);
-      _replace(actualBoard, row, col, v0);
-    }
+//    }
 
 //    for (int i = 0; i < 4; i++) {
 //      for (int j = 0; j < 4; j++) {
@@ -92,16 +95,16 @@ class BoardMove {
 //    }
 
     Board resultBoard;
-    if(direction == Direction.DOWN) {
+    if (direction == Direction.DOWN) {
       resultBoard = passedBoard;
-    } else if(direction == Direction.RIGHT) {
+    } else if (direction == Direction.RIGHT) {
       resultBoard = _rotateTableRight(passedBoard);
       resultBoard = _rotateTableRight(passedBoard);
       resultBoard = _rotateTableRight(passedBoard);
-    } else if(direction == Direction.UP){
+    } else if (direction == Direction.UP) {
       resultBoard = _rotateTableRight(passedBoard);
       resultBoard = _rotateTableRight(passedBoard);
-    }else if(direction == Direction.LEFT){
+    } else if (direction == Direction.LEFT) {
       resultBoard = _rotateTableRight(passedBoard);
     }
 
@@ -119,11 +122,49 @@ class BoardMove {
     return resultBoard;
   }
 
-  void _replace(Board actualBoard, int row, int col, int value) {
-    if(actualBoard.grid[row].elementAt(col) == 0)
-      actualBoard.put(col, row, value);
-    else if(actualBoard.grid[row].elementAt(col) == value)
-      actualBoard.put(col, row, value * value);
+  bool _checkLowestPosition(Board actualBoard, int col, int row, int value,
+      int fromCol, int fromRow, bool merged) {
+    if (value != 0) {
+      if (actualBoard.grid[3].elementAt(col) == 0) {
+        actualBoard.put(col, row, value);
+        actualBoard.remove(fromCol, fromRow);
+      } else if (!merged && actualBoard.grid[3].elementAt(col) == value) {
+        actualBoard.put(col, row, value * value);
+        actualBoard.remove(fromCol, fromRow);
+        return true;
+      }
+    }
+    return merged;
+  }
+
+  bool _checkPositionTwo(Board actualBoard, int col, int row, int value,
+      int fromCol, int fromRow, bool merged) {
+    if (value != 0) {
+      if (actualBoard.grid[2].elementAt(col) == 0) {
+        actualBoard.put(col, row, value);
+        actualBoard.remove(fromCol, fromRow);
+      } else if (!merged && actualBoard.grid[2].elementAt(col) == value) {
+        actualBoard.put(col, row, value * value);
+        actualBoard.remove(fromCol, fromRow);
+        return true;
+      }
+    }
+    return merged;
+  }
+
+  bool _checkPositionOne(Board actualBoard, int col, int row, int value,
+      int fromCol, int fromRow, bool merged) {
+    if (value != 0) {
+      if (actualBoard.grid[1].elementAt(col) == 0) {
+        actualBoard.put(col, row, value);
+        actualBoard.remove(fromCol, fromRow);
+      } else if (!merged && actualBoard.grid[1].elementAt(col) == value) {
+        actualBoard.put(col, row, value * value);
+        actualBoard.remove(fromCol, fromRow);
+        return true;
+      }
+    }
+    return merged;
   }
 
   Board _rotateTableRight(Board board) {
