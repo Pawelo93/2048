@@ -24,11 +24,6 @@ class Board extends Equatable {
   void remove(int row, int column) {
     put(row, column, 0);
   }
-//
-//  void replace(int row, int column, int value) {
-//    put(row, column, value);
-//    remove(row, column);
-//  }
 
   static printMe(Board board) {
     print("${board.grid[0]}");

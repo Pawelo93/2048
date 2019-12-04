@@ -6,7 +6,7 @@ class BoardMove {
   Board move(Board passedBoard, Direction direction) {
     Board actualBoard;
     if (direction == Direction.DOWN) {
-      actualBoard = passedBoard;
+      actualBoard = copy(passedBoard);
     } else if (direction == Direction.RIGHT) {
       actualBoard = rotateTableLeft(passedBoard);
       actualBoard = rotateTableLeft(actualBoard);
@@ -26,7 +26,7 @@ class BoardMove {
 
     Board resultBoard;
     if (direction == Direction.DOWN) {
-      resultBoard = actualBoard;
+      resultBoard = copy(actualBoard);
     } else if (direction == Direction.RIGHT) {
       resultBoard = rotateTableLeft(actualBoard);
     } else if (direction == Direction.UP) {
@@ -77,6 +77,22 @@ class BoardMove {
         var value = board.grid[i].elementAt(j);
 
         newGrid[3 - j].replaceRange(i, i+1, [value]);
+      }
+    }
+    return Board(grid: newGrid);
+  }
+
+  Board copy(Board board) {
+    List<List<int>> newGrid = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        var value = board.grid[i].elementAt(j);
+        newGrid[i].replaceRange(j, j+1, [value]);
       }
     }
     return Board(grid: newGrid);

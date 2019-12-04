@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_2048/model/board/board_move.dart';
+import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
 import 'mycolor.dart';
+import 'ui/board/board_widget.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({Key key}) : super(key: key);
@@ -29,7 +32,7 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: <Widget>[
               Score(),
-              BoardWidget(),
+              BoardWidget(BoardBloc(BoardMove())),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Row(
@@ -87,85 +90,6 @@ class Score extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class BoardWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double gridWidth = (width - 80) / 4;
-    double gridHeight = gridWidth;
-    double height = 30 + (gridHeight * 4) + 10;
-    bool isGameOver = false;
-    bool isGameWon = false;
-
-    return Container(
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: GestureDetector(
-              child: GridView.count(
-                primary: false,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                crossAxisCount: 4,
-//                children: getGrid(gridWidth, gridHeight),
-              ),
-              onVerticalDragEnd: (DragEndDetails details) {
-                //primaryVelocity -ve up +ve down
-                if (details.primaryVelocity < 0) {
-//                  handleGesture(0);
-                } else if (details.primaryVelocity > 0) {
-//                  handleGesture(1);
-                }
-              },
-              onHorizontalDragEnd: (details) {
-                //-ve right, +ve left
-                if (details.primaryVelocity > 0) {
-//                  handleGesture(2);
-                } else if (details.primaryVelocity < 0) {
-//                  handleGesture(3);
-                }
-              },
-            ),
-          ),
-          isGameOver
-              ? Container(
-            height: height,
-            color: Color(MyColor.transparentWhite),
-            child: Center(
-              child: Text(
-                'Game over!',
-                style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(MyColor.gridBackground)),
-              ),
-            ),
-          )
-              : SizedBox(),
-          isGameWon
-              ? Container(
-            height: height,
-            color: Color(MyColor.transparentWhite),
-            child: Center(
-              child: Text(
-                'You Won!',
-                style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(MyColor.gridBackground)),
-              ),
-            ),
-          )
-              : SizedBox(),
-        ],
-      ),
-      color: Color(MyColor.gridBackground),
     );
   }
 }
