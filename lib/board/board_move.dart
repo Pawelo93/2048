@@ -2,172 +2,83 @@ import 'board.dart';
 import 'direction.dart';
 
 class BoardMove {
-  Board move(Board passedBoard, Direction direction) {
 
+  Board move(Board passedBoard, Direction direction) {
     Board actualBoard;
     if (direction == Direction.DOWN) {
       actualBoard = passedBoard;
     } else if (direction == Direction.RIGHT) {
-      actualBoard = _rotateTableRight(passedBoard);
+      actualBoard = rotateTableLeft(passedBoard);
+      actualBoard = rotateTableLeft(actualBoard);
+      actualBoard = rotateTableLeft(actualBoard);
     } else if (direction == Direction.UP) {
-      actualBoard = _rotateTableRight(passedBoard);
-      actualBoard = _rotateTableRight(passedBoard);
+      actualBoard = rotateTableLeft(passedBoard);
+      actualBoard = rotateTableLeft(actualBoard);
     } else if (direction == Direction.LEFT) {
-      actualBoard = _rotateTableRight(passedBoard);
-      actualBoard = _rotateTableRight(passedBoard);
-      actualBoard = _rotateTableRight(passedBoard);
+      actualBoard = rotateTableLeft(passedBoard);
     }
 
-
-//    var col = 0;
-//    var row = 3;
-//    var fromCol = 0;
-//    var fromRow = row - 1;
-//    bool merged = false;
-//    var value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    merged = _checkLowestPosition(actualBoard, col, row, value, fromCol, fromRow, merged);
-//
-//    row = 2;
-//    fromRow = row - 1;
-//    value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    if(actualBoard.grid[2].elementAt(col) == 0)
-//      merged = _checkLowestPosition(actualBoard, col, row + 1, value, fromCol, fromRow, merged);
-//    value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    merged = _checkPositionTwo(actualBoard, col, row, value, fromCol, fromRow, merged);
-//
-//    row = 1;
-//    fromRow = row - 1;
-//    value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    if(actualBoard.grid[2].elementAt(col) == 0 && actualBoard.grid[1].elementAt(col) == 0)
-//      merged = _checkLowestPosition(actualBoard, col, row + 2, value, fromCol, fromRow, merged);
-//    value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    if(actualBoard.grid[1].elementAt(col) == 0)
-//      merged = _checkPositionTwo(actualBoard, col, row + 1, value, fromCol, fromRow, merged);
-//    value = actualBoard.grid[fromRow].elementAt(fromCol);
-//    merged = _checkPositionOne(actualBoard, col, row, value, fromCol, fromRow, merged);
-
-
-//    }
-
-//    for (int i = 0; i < 4; i++) {
-//      for (int j = 0; j < 4; j++) {
-//
-//      }
-//    }
-
-//    for(int col=0;col<4;col++)
-//      for(int row=1;row<4;row++)
-//      {
-//        int operacje = 0;
-//        for(int c=0;c<row;c++)
-//        {
-//          if(tableArray[col][row-1-c]==Tile.EMPTY){
-//            tableArray[col][row-1-c]=tableArray[col][row-c];
-//            if(tableArray[col][row-c] != Tile.EMPTY){
-//              moves.add(new Moves(direction, col, row-c, col, row-1-c));
-//              tableArray[col][row-c]=Tile.EMPTY;
-//            }
-//            operacje++;
-//          }
-//          if(operacje <row && tableArray[col][row-1-operacje]==tableArray[col][row-operacje]){
-//            tableArray[col][row-1-operacje]=tableArray[col][row-operacje]*2;
-//            points+=tableArray[col][row-operacje]*2;
-//            if(tableArray[col][row-1-operacje]!=0)
-//              tableArray[col][row-1-operacje]+=1;
-//
-//            if(tableArray[col][row-operacje] != Tile.EMPTY){
-//              moves.add(new Moves(direction, col, row-operacje, col, row-1-operacje));
-//              tableArray[col][row-operacje]=Tile.EMPTY;
-//            }
-//          }
-//        }
-//      }
-
-//    for(int i=0;i<4;i++)
-//    {
-//      for(int j=0;j<4;j++)
-//      {
-//        if(tableArray[i][j]%2!=0)
-//        {
-//          tableArray[i][j]-=1;
-//        }
-//      }
-//    }
+    for (int column = 0; column < 4; column++) {
+      _moveDown(actualBoard, column);
+      _join(actualBoard, column);
+      _moveDown(actualBoard, column);
+    }
 
     Board resultBoard;
     if (direction == Direction.DOWN) {
-      resultBoard = passedBoard;
+      resultBoard = actualBoard;
     } else if (direction == Direction.RIGHT) {
-      resultBoard = _rotateTableRight(passedBoard);
-      resultBoard = _rotateTableRight(passedBoard);
-      resultBoard = _rotateTableRight(passedBoard);
+      resultBoard = rotateTableLeft(actualBoard);
     } else if (direction == Direction.UP) {
-      resultBoard = _rotateTableRight(passedBoard);
-      resultBoard = _rotateTableRight(passedBoard);
+      resultBoard = rotateTableLeft(actualBoard);
+      resultBoard = rotateTableLeft(resultBoard);
     } else if (direction == Direction.LEFT) {
-      resultBoard = _rotateTableRight(passedBoard);
+      resultBoard = rotateTableLeft(actualBoard);
+      resultBoard = rotateTableLeft(resultBoard);
+      resultBoard = rotateTableLeft(resultBoard);
     }
-
-//    if(direction == Direction.right){
-//      rotateTableRight();
-//      rotateTableRight();
-//      rotateTableRight();
-//    }else if(direction == Direction.up){
-//      rotateTableRight();
-//      rotateTableRight();
-//    }else if(direction == Direction.left){
-//      rotateTableRight();
-//    }
 
     return resultBoard;
   }
 
-  bool _checkLowestPosition(Board actualBoard, int col, int row, int value,
-      int fromCol, int fromRow, bool merged) {
-    if (value != 0) {
-      if (actualBoard.grid[3].elementAt(col) == 0) {
-        actualBoard.put(col, row, value);
-        actualBoard.remove(fromCol, fromRow);
-      } else if (!merged && actualBoard.grid[3].elementAt(col) == value) {
-        actualBoard.put(col, row, value * value);
-        actualBoard.remove(fromCol, fromRow);
-        return true;
+  void _moveDown(Board actualBoard, int column) {
+    for (int times = 0; times < 3; times++) {
+      for (int row = 3; row > 0; row--) {
+        if (actualBoard.grid[row].elementAt(column) == 0) {
+          actualBoard.put(
+              row, column, actualBoard.grid[row - 1].elementAt(column));
+          actualBoard.remove(row - 1, column);
+        }
       }
     }
-    return merged;
   }
 
-  bool _checkPositionTwo(Board actualBoard, int col, int row, int value,
-      int fromCol, int fromRow, bool merged) {
-    if (value != 0) {
-      if (actualBoard.grid[2].elementAt(col) == 0) {
-        actualBoard.put(col, row, value);
-        actualBoard.remove(fromCol, fromRow);
-      } else if (!merged && actualBoard.grid[2].elementAt(col) == value) {
-        actualBoard.put(col, row, value * value);
-        actualBoard.remove(fromCol, fromRow);
-        return true;
+  void _join(Board actualBoard, int column) {
+    for (int row = 3; row > 0; row--) {
+      var value = actualBoard.grid[row].elementAt(column);
+      var valueUp = actualBoard.grid[row - 1].elementAt(column);
+      if (value == valueUp) {
+        actualBoard.put(
+            row, column, actualBoard.grid[row - 1].elementAt(column) * 2);
+        actualBoard.remove(row - 1, column);
       }
     }
-    return merged;
   }
 
-  bool _checkPositionOne(Board actualBoard, int col, int row, int value,
-      int fromCol, int fromRow, bool merged) {
-    if (value != 0) {
-      if (actualBoard.grid[1].elementAt(col) == 0) {
-        actualBoard.put(col, row, value);
-        actualBoard.remove(fromCol, fromRow);
-      } else if (!merged && actualBoard.grid[1].elementAt(col) == value) {
-        actualBoard.put(col, row, value * value);
-        actualBoard.remove(fromCol, fromRow);
-        return true;
+  Board rotateTableLeft(Board board) {
+    List<List<int>> newGrid = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        var value = board.grid[i].elementAt(j);
+
+        newGrid[3 - j].replaceRange(i, i+1, [value]);
       }
     }
-    return merged;
-  }
-
-  Board _rotateTableRight(Board board) {
-    return board;
+    return Board(grid: newGrid);
   }
 }
