@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_2048/model/board/board.dart';
-import 'package:flutter_2048/model/board/board_move.dart';
-import 'package:flutter_2048/model/board/direction.dart';
 import 'package:flutter_2048/mycolor.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
-import 'package:flutter_2048/ui/board/bloc/board_event.dart';
 import 'package:flutter_2048/ui/board/bloc/board_state.dart';
 import 'package:flutter_2048/ui/board/tile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BoardWidget extends StatelessWidget {
-  BoardMove boardMove = BoardMove();
   final BoardBloc boardBloc;
+  FocusNode _focusNode = FocusNode();
 
   BoardWidget(this.boardBloc);
 
@@ -23,7 +21,7 @@ class BoardWidget extends StatelessWidget {
     double height = 30 + (gridHeight * 4) + 10;
     bool isGameOver = false;
     bool isGameWon = false;
-    boardBloc.add(SetupBoard());
+    boardBloc.setupBoard();
 
     return Container(
       height: height,
@@ -31,41 +29,52 @@ class BoardWidget extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(10.0),
-            child: GestureDetector(
-              child: BlocBuilder<BoardBloc, BoardState>(
-                bloc: boardBloc,
-                builder: (context, state) {
-                  return GridView.count(
-                    primary: false,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    crossAxisCount: 4,
-                    children: getGrid(state.board, gridWidth, gridHeight),
-                  );
+            child: RawKeyboardListener(
+              onKey: (key) {
+                print('key ${key.data}');
+
+                if (key.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
+                  boardBloc.moveUp();
+                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+                  boardBloc.moveDown();
+                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+                  boardBloc.moveLeft();
+                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+                  boardBloc.moveRight();
+                }
+              },
+              focusNode: _focusNode,
+              child: GestureDetector(
+                child: BlocBuilder<BoardBloc, BoardState>(
+                  bloc: boardBloc,
+                  builder: (context, state) {
+                    return GridView.count(
+                      primary: false,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      crossAxisCount: 4,
+                      children: getGrid(state.board, gridWidth, gridHeight),
+                    );
+                  },
+                ),
+                onVerticalDragEnd: (DragEndDetails details) {
+                  //primaryVelocity -ve up +ve down
+                  FocusScope.of(context).requestFocus(_focusNode);
+                  if (details.primaryVelocity < 0) {
+                    boardBloc.moveUp();
+                  } else if (details.primaryVelocity > 0) {
+                    boardBloc.moveDown();
+                  }
+                },
+                onHorizontalDragEnd: (details) {
+                  //-ve right, +ve left
+                  if (details.primaryVelocity > 0) {
+                    boardBloc.moveRight();
+                  } else if (details.primaryVelocity < 0) {
+                    boardBloc.moveLeft();
+                  }
                 },
               ),
-              onVerticalDragEnd: (DragEndDetails details) {
-                //primaryVelocity -ve up +ve down
-                print('details ${details.primaryVelocity}');
-                if (details.primaryVelocity < 0) {
-//                  handleGesture(0);
-                boardBloc.add(Move(Direction.UP));
-
-                } else if (details.primaryVelocity > 0) {
-//                  handleGesture(1);
-                  boardBloc.add(Move(Direction.DOWN));
-                }
-              },
-              onHorizontalDragEnd: (details) {
-                //-ve right, +ve left
-                if (details.primaryVelocity > 0) {
-//                  handleGesture(2);
-                  boardBloc.add(Move(Direction.RIGHT));
-                } else if (details.primaryVelocity < 0) {
-//                  handleGesture(3);
-                  boardBloc.add(Move(Direction.LEFT));
-                }
-              },
             ),
           ),
           isGameOver

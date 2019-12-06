@@ -1,5 +1,5 @@
 import 'package:flutter_2048/board/board.dart';
-import 'package:flutter_2048/board/board_move.dart';
+import 'package:flutter_2048/board/make_move.dart';
 import 'package:flutter_2048/board/direction.dart';
 import 'package:flutter_test/flutter_test.dart';
 

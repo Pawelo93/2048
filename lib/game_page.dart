@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_2048/model/board/board_move.dart';
+import 'package:flutter_2048/domain/make_move.dart';
+import 'package:flutter_2048/domain/random_tile_provider.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
 import 'mycolor.dart';
 import 'ui/board/board_widget.dart';
@@ -32,7 +33,7 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: <Widget>[
               Score(),
-              BoardWidget(BoardBloc(BoardMove())),
+              BoardWidget(BoardBloc(MakeMove(), RandomTileProvider())),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Row(

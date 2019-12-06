@@ -31,4 +31,24 @@ class Board extends Equatable {
     print("${board.grid[2]}");
     print("${board.grid[3]}");
   }
+
+  bool isEmpty(x, y) {
+    return grid[x].elementAt(y) == 0;
+  }
+
+  Board copy() {
+    List<List<int>> newGrid = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ];
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        var value = grid[i].elementAt(j);
+        newGrid[i].replaceRange(j, j + 1, [value]);
+      }
+    }
+    return Board(grid: newGrid);
+  }
 }
