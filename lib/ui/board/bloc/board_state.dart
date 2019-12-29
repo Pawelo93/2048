@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../model/board/board.dart';
+
 class BoardState extends Equatable {
-  final board;
+  final Board board;
 
   BoardState(this.board);
 

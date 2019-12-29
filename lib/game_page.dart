@@ -4,6 +4,10 @@ import 'package:flutter_2048/domain/random_tile_provider.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
 import 'mycolor.dart';
 import 'ui/board/board_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'ui/score/bloc/score_bloc.dart';
+import 'ui/score/bloc/score_state.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({Key key}) : super(key: key);
@@ -33,7 +37,7 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: <Widget>[
               Score(),
-              BoardWidget(BoardBloc(MakeMove(), RandomTileProvider())),
+              BoardWidget(BoardBloc(MakeMove(), RandomTileProvider(), BlocProvider.of(context))),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Row(
@@ -53,44 +57,48 @@ class _GamePageState extends State<GamePage> {
 }
 
 class Score extends StatelessWidget {
-  var score = 100;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Container(
-        width: 200.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          color: Color(MyColor.gridBackground),
-        ),
-        height: 82.0,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 10.0, bottom: 2.0),
-              child: Text(
-                'Score',
-                style: TextStyle(
-                    fontSize: 15.0,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.bold),
-              ),
+    return BlocBuilder<ScoreBloc, ScoreState>(
+      bloc: BlocProvider.of(context),
+      builder: (context, state) {
+        return Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Container(
+            width: 200.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              color: Color(MyColor.gridBackground),
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 10.0),
-              child: Text(
-                '${score}',
-                style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
+            height: 82.0,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 2.0),
+                  child: Text(
+                    'Score',
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    state.score.toString(),
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -98,7 +106,7 @@ class Score extends StatelessWidget {
 class NewGameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return           Container(
+    return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.0),
         color: Color(MyColor.gridBackground),
@@ -142,26 +150,23 @@ class HighScoreWidget extends StatelessWidget {
           children: <Widget>[
             Text(
               'High Score',
-              style: TextStyle(
-                  color: Colors.white70,
-                  fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
             ),
             FutureBuilder<String>(
-              future: Future.value("10"),
+              future: Future.value("0"),
               builder: (ctx, snapshot) {
                 if (snapshot.hasData) {
                   return Text(
                     snapshot.data,
                     style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   );
                 } else {
                   return Text(
                     '0',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   );
                 }
               },
@@ -172,5 +177,3 @@ class HighScoreWidget extends StatelessWidget {
     );
   }
 }
-
-

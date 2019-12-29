@@ -4,77 +4,38 @@ import 'package:flutter_2048/model/board/board.dart';
 import 'package:flutter_2048/mycolor.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
 import 'package:flutter_2048/ui/board/bloc/board_state.dart';
-import 'package:flutter_2048/ui/board/tile.dart';
+import 'package:flutter_2048/ui/board/tile_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BoardWidget extends StatelessWidget {
   final BoardBloc boardBloc;
-  FocusNode _focusNode = FocusNode();
 
   BoardWidget(this.boardBloc);
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double gridWidth = (width - 80) / 4;
+    double windowWidth = MediaQuery.of(context).size.width - 100;
+//
+    double gridWidth = windowWidth / 4;
     double gridHeight = gridWidth;
-    double height = 30 + (gridHeight * 4) + 10;
+    double height = gridHeight * 4;
     bool isGameOver = false;
     bool isGameWon = false;
     boardBloc.setupBoard();
 
     return Container(
       height: height,
+      width: height,
+      color: Color(MyColor.gridBackground),
       child: Stack(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(10.0),
             child: RawKeyboardListener(
-              onKey: (key) {
-                print('key ${key.data}');
-
-                if (key.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
-                  boardBloc.moveUp();
-                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
-                  boardBloc.moveDown();
-                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
-                  boardBloc.moveLeft();
-                } else if (key.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
-                  boardBloc.moveRight();
-                }
-              },
-              focusNode: _focusNode,
-              child: GestureDetector(
-                child: BlocBuilder<BoardBloc, BoardState>(
-                  bloc: boardBloc,
-                  builder: (context, state) {
-                    return GridView.count(
-                      primary: false,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                      crossAxisCount: 4,
-                      children: getGrid(state.board, gridWidth, gridHeight),
-                    );
-                  },
-                ),
-                onVerticalDragEnd: (DragEndDetails details) {
-                  //primaryVelocity -ve up +ve down
-                  FocusScope.of(context).requestFocus(_focusNode);
-                  if (details.primaryVelocity < 0) {
-                    boardBloc.moveUp();
-                  } else if (details.primaryVelocity > 0) {
-                    boardBloc.moveDown();
-                  }
-                },
-                onHorizontalDragEnd: (details) {
-                  //-ve right, +ve left
-                  if (details.primaryVelocity > 0) {
-                    boardBloc.moveRight();
-                  } else if (details.primaryVelocity < 0) {
-                    boardBloc.moveLeft();
-                  }
-                },
-              ),
+              autofocus: true,
+              focusNode: FocusNode(),
+              onKey: keyboardListener,
+              child: BoardGestureWidget(boardBloc),
             ),
           ),
           isGameOver
@@ -109,7 +70,74 @@ class BoardWidget extends StatelessWidget {
               : SizedBox(),
         ],
       ),
-      color: Color(MyColor.gridBackground),
+    );
+  }
+
+  void keyboardListener(key) {
+    print('key ${key.data}');
+
+    if (key.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
+      boardBloc.moveUp();
+    } else if (key.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+      boardBloc.moveDown();
+    } else if (key.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+      boardBloc.moveLeft();
+    } else if (key.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+      boardBloc.moveRight();
+    }
+  }
+}
+
+class BoardGestureWidget extends StatelessWidget {
+  final BoardBloc boardBloc;
+
+  const BoardGestureWidget(this.boardBloc);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: BlocBuilder<BoardBloc, BoardState>(
+        bloc: boardBloc,
+        builder: (context, state) {
+          return BoardGrid(state.board, 20, 20);
+        },
+      ),
+      onVerticalDragEnd: (DragEndDetails details) {
+        //primaryVelocity -ve up +ve down
+//        FocusScope.of(context).requestFocus(_focusNode);
+        if (details.primaryVelocity < 0) {
+          boardBloc.moveUp();
+        } else if (details.primaryVelocity > 0) {
+          boardBloc.moveDown();
+        }
+      },
+      onHorizontalDragEnd: (details) {
+        //-ve right, +ve left
+        if (details.primaryVelocity > 0) {
+          boardBloc.moveRight();
+        } else if (details.primaryVelocity < 0) {
+          boardBloc.moveLeft();
+        }
+      },
+    );
+  }
+}
+
+class BoardGrid extends StatelessWidget {
+  final Board board;
+  final double tileWidth;
+  final double tileHeight;
+
+  const BoardGrid(this.board, this.tileWidth, this.tileHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      primary: false,
+      crossAxisSpacing: 10.0,
+      mainAxisSpacing: 10.0,
+      crossAxisCount: 4,
+      children: getGrid(board, tileWidth, tileHeight),
     );
   }
 
@@ -153,7 +181,7 @@ class BoardWidget extends StatelessWidget {
             size = 20.0;
             break;
         }
-        grids.add(Tile(number, width, height, color, size));
+        grids.add(TileWidget(number, width, height, color, size));
       }
     }
     return grids;

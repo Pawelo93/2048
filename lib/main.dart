@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'game_page.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'ui/score/bloc/score_bloc.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -26,7 +28,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: GamePage(),
+      home: BlocProvider(
+        create: (context) => ScoreBloc(),
+        child: GamePage(),
+      ),
     );
   }
 }
