@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_2048/model/board/board.dart';
 import 'package:flutter_2048/mycolor.dart';
+import 'package:flutter_2048/player/ai_player_widget.dart';
+import 'package:flutter_2048/player/real_player_widget.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
 import 'package:flutter_2048/ui/board/bloc/board_state.dart';
 import 'package:flutter_2048/ui/board/tile_widget.dart';
@@ -15,7 +17,7 @@ class BoardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double windowWidth = MediaQuery.of(context).size.width - 100;
-//
+
     double gridWidth = windowWidth / 4;
     double gridHeight = gridWidth;
     double height = gridHeight * 4;
@@ -35,7 +37,7 @@ class BoardWidget extends StatelessWidget {
               autofocus: true,
               focusNode: FocusNode(),
               onKey: keyboardListener,
-              child: BoardGestureWidget(boardBloc),
+              child: AiPlayerWidget(boardBloc),
             ),
           ),
           isGameOver
@@ -85,41 +87,6 @@ class BoardWidget extends StatelessWidget {
     } else if (key.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
       boardBloc.moveRight();
     }
-  }
-}
-
-class BoardGestureWidget extends StatelessWidget {
-  final BoardBloc boardBloc;
-
-  const BoardGestureWidget(this.boardBloc);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: BlocBuilder<BoardBloc, BoardState>(
-        bloc: boardBloc,
-        builder: (context, state) {
-          return BoardGrid(state.board, 20, 20);
-        },
-      ),
-      onVerticalDragEnd: (DragEndDetails details) {
-        //primaryVelocity -ve up +ve down
-//        FocusScope.of(context).requestFocus(_focusNode);
-        if (details.primaryVelocity < 0) {
-          boardBloc.moveUp();
-        } else if (details.primaryVelocity > 0) {
-          boardBloc.moveDown();
-        }
-      },
-      onHorizontalDragEnd: (details) {
-        //-ve right, +ve left
-        if (details.primaryVelocity > 0) {
-          boardBloc.moveRight();
-        } else if (details.primaryVelocity < 0) {
-          boardBloc.moveLeft();
-        }
-      },
-    );
   }
 }
 
