@@ -37,7 +37,8 @@ class _GamePageState extends State<GamePage> {
           child: Column(
             children: <Widget>[
               Score(),
-              BoardWidget(BoardBloc(MakeMove(), RandomTileProvider(), BlocProvider.of(context))),
+              BoardWidget(BoardBloc(BlocProvider.of(context), MakeMove(),
+                  RandomTileProvider(), BlocProvider.of(context))),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: Row(
@@ -57,7 +58,6 @@ class _GamePageState extends State<GamePage> {
 }
 
 class Score extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScoreBloc, ScoreState>(

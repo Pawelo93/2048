@@ -14,24 +14,23 @@ class AiPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Direction>(
-      stream: aiEngine.observeMoves(),
-      builder: (context, AsyncSnapshot<Direction> data) {
-        if (data.hasData) {
-          if (data.data == Direction.RIGHT)
+    return BlocBuilder<BoardBloc, BoardState>(
+      bloc: boardBloc,
+      builder: (context, state) {
+        if (state is WaitingForMove) {
+          var direction = aiEngine.computeDirection(state.board);
+          if (direction == Direction.RIGHT)
             boardBloc.moveRight();
-          else if (data.data == Direction.LEFT)
+          else if (direction == Direction.LEFT)
             boardBloc.moveLeft();
-          else if (data.data == Direction.UP)
+          else if (direction == Direction.UP)
             boardBloc.moveUp();
-          else if (data.data == Direction.DOWN) boardBloc.moveDown();
+          else if (direction == Direction.DOWN)
+            boardBloc.moveDown();
+          else if(direction == null)
+            boardBloc.noMoreMoves();
         }
-        return BlocBuilder<BoardBloc, BoardState>(
-          bloc: boardBloc,
-          builder: (context, state) {
-            return BoardGrid(state.board, 20, 20);
-          },
-        );
+        return BoardGrid(state.board, 20, 20);
       },
     );
   }

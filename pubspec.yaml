@@ -27,6 +27,7 @@ dependencies:
   equatable: ^1.0.1
   built_collection: ^4.3.0
   rxdart: ^0.23.1
+  dart_numerics: ^0.0.5
 
 dev_dependencies:
   flutter_test:

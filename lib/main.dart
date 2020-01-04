@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_2048/ui/game/bloc/game_bloc.dart';
 
 import 'game_page.dart';
 import 'package:bloc/bloc.dart';
@@ -9,7 +10,7 @@ class SimpleBlocDelegate extends BlocDelegate {
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    print(transition);
+//    print(transition);
   }
 }
 
@@ -28,8 +29,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: BlocProvider(
-        create: (context) => ScoreBloc(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<ScoreBloc>(
+            create: (context) => ScoreBloc(),
+          ),
+          BlocProvider<GameBloc>(
+            create: (context) => GameBloc(),
+          )
+        ],
         child: GamePage(),
       ),
     );

@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_2048/model/board/board.dart';
 import 'package:flutter_2048/mycolor.dart';
 import 'package:flutter_2048/player/ai_player_widget.dart';
-import 'package:flutter_2048/player/real_player_widget.dart';
 import 'package:flutter_2048/ui/board/bloc/board_bloc.dart';
-import 'package:flutter_2048/ui/board/bloc/board_state.dart';
 import 'package:flutter_2048/ui/board/tile_widget.dart';
+import 'package:flutter_2048/ui/game/bloc/game_bloc.dart';
+import 'package:flutter_2048/ui/game/bloc/game_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BoardWidget extends StatelessWidget {
@@ -21,56 +21,58 @@ class BoardWidget extends StatelessWidget {
     double gridWidth = windowWidth / 4;
     double gridHeight = gridWidth;
     double height = gridHeight * 4;
-    bool isGameOver = false;
     bool isGameWon = false;
     boardBloc.setupBoard();
 
-    return Container(
-      height: height,
-      width: height,
-      color: Color(MyColor.gridBackground),
-      child: Stack(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: RawKeyboardListener(
-              autofocus: true,
-              focusNode: FocusNode(),
-              onKey: keyboardListener,
-              child: AiPlayerWidget(boardBloc),
+    return BlocBuilder<GameBloc, GameState>(
+      bloc: BlocProvider.of(context),
+      builder: (context, state) => Container(
+        height: height,
+        width: height,
+        color: Color(MyColor.gridBackground),
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: RawKeyboardListener(
+                autofocus: true,
+                focusNode: FocusNode(),
+                onKey: keyboardListener,
+                child: AiPlayerWidget(boardBloc),
+              ),
             ),
-          ),
-          isGameOver
-              ? Container(
-                  height: height,
-                  color: Color(MyColor.transparentWhite),
-                  child: Center(
-                    child: Text(
-                      'Game over!',
-                      style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(MyColor.gridBackground)),
+            (state is GameOver)
+                ? Container(
+                    height: height,
+                    color: Color(MyColor.transparentWhite),
+                    child: Center(
+                      child: Text(
+                        'Game over!',
+                        style: TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(MyColor.gridBackground)),
+                      ),
                     ),
-                  ),
-                )
-              : SizedBox(),
-          isGameWon
-              ? Container(
-                  height: height,
-                  color: Color(MyColor.transparentWhite),
-                  child: Center(
-                    child: Text(
-                      'You Won!',
-                      style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(MyColor.gridBackground)),
+                  )
+                : SizedBox(),
+            isGameWon
+                ? Container(
+                    height: height,
+                    color: Color(MyColor.transparentWhite),
+                    child: Center(
+                      child: Text(
+                        'You Won!',
+                        style: TextStyle(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(MyColor.gridBackground)),
+                      ),
                     ),
-                  ),
-                )
-              : SizedBox(),
-        ],
+                  )
+                : SizedBox(),
+          ],
+        ),
       ),
     );
   }
